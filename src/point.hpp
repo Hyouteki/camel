@@ -20,6 +20,7 @@ public:
     void print() const;
     float euclidean_distance(const Point point) const;
     float manhattan_distance(const Point point) const;
+    float distance(const Point point, const std::string dist_metric) const;
     void assert_equal_n(const Point point) const;
     Point copy() const;
 } Point; 
@@ -28,10 +29,14 @@ std::vector<std::vector<float>> points_to_matrix(const std::vector<Point> points
 std::vector<Point> vectors_to_points(const std::vector<std::vector<float>> vectors);
 void assert_equal_n(const std::vector<Point> points);
 std::vector<Point> copy(const std::vector<Point> points);
+Point random_point(const size_t n);
 
 void Point::print() const {
-    std::cout << "[";
-    for (float x: this->coords) std::cout << x << ", ";
+    std::cout << this->label.num << ": [";
+    for (size_t i = 0; i < this->coords.size(); ++i) {
+        std::cout << this->coords[i];
+        if (i < this->coords.size()-1) std::cout << ", ";
+    }
     std::cout << "]";
 }
 
@@ -59,6 +64,12 @@ float Point::manhattan_distance(const Point point) const {
     for (size_t i = 0; i < this->n; ++i)
         tmp += abs(this->coords[i] - point.coords[i]);
     return tmp;
+}
+
+float Point::distance(const Point point, const std::string dist_metric) const {
+    return (dist_metric == "manhattan")? 
+        this->manhattan_distance(point): 
+        this->euclidean_distance(point); 
 }
 
 Point Point::copy() const {
@@ -102,6 +113,12 @@ std::vector<Point> copy(const std::vector<Point> points) {
     std::vector<Point> tmp;
     for (Point point: points) tmp.push_back(point.copy());
     return tmp;
+}
+
+Point random_point(const size_t n) {
+    std::vector<float> coords;
+    for (size_t i = 0; i < n; ++i) coords.push_back(rand()%100);
+    return (Point){.n = n, .coords = coords};
 }
 
 #endif // CAMEL_POINT_HPP_

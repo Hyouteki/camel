@@ -10,7 +10,6 @@
 #include "../point.hpp"
 
 typedef struct Knn {
-    int n;
     int k;
     std::vector<Point> points;
     std::string dist_metric = "euclidean";
@@ -24,18 +23,22 @@ public:
     std::vector<Label> evaluate(const std::vector<Point> points) const;
 } Knn;
 
-void Knn::compile(const size_t k, const std::vector<Point> points, const std::string dist_metric) {
+void Knn::compile(
+    const size_t k, 
+    const std::vector<Point> points, 
+    const std::string dist_metric
+) {
     assert_equal_n(points);
     if (points.size() == 0) return;
-    this->n = points[0].coords.size();
     this->points = points;
-    if (k > n) {
+    if (k > points.size()) {
         std::cerr << "CAMEL ERROR: k(k nearest neighbors) > n(number of points) [";
-        std::cerr << k << " > " << n << "]" << std::endl;
+        std::cerr << k << " > " << points.size() << "]" << std::endl;
         exit(1);
     }
     if (dist_metric != "euclidean" && dist_metric != "manhattan") {
-        std::cerr << "CAMEL ERROR: Invalid distance metric [" << dist_metric << "]" << std::endl;
+        std::cerr << "CAMEL ERROR: Invalid distance metric [";
+        std::cerr << dist_metric << "]" << std::endl;
         exit(1);
     } 
     this->dist_metric = dist_metric;
@@ -46,9 +49,7 @@ Label Knn::predict(const Point point) const {
     if (this->points.size() == 0) return {};
     std::vector<Point> tmp = copy(this->points);
     sort(tmp.begin(), tmp.end(), [point, this](const Point& p1, const Point& p2) {
-        if (this->dist_metric == "manhattan") 
-            return point.manhattan_distance(p1) <= point.manhattan_distance(p2);
-        else return point.euclidean_distance(p1) <= point.euclidean_distance(p2);
+        return point.distance(p1, dist_metric) < point.distance(p2, dist_metric);
     });
     std::unordered_map<int, int> int_map;
     std::unordered_map<std::string, int> str_map;
