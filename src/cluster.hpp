@@ -25,7 +25,7 @@ void Cluster::print() const {
     }
     std::cout << "\tCentroid: "; this->centroid.print();
     std::cout << ", " << std::endl;
-    std::cout << "\tMembers:" << std::endl << "\t{" << std::endl;
+    std::cout << "\tMembers[" << this->members.size() << "]:" << std::endl << "\t{" << std::endl;
     for (size_t i = 0; i < 5 && i < this->members.size(); ++i) {
         std::cout << "\t\t";
         this->members[i].print();
@@ -42,10 +42,7 @@ void Cluster::randomize_centroid(const size_t dim) {
 }
 
 void Cluster::recompute_centroid() {
-    if (this->members.size() == 0) {
-        this->centroid = {};
-        return;
-    }
+    if (this->members.size() == 0) return;
     assert_equal_n(this->members);
     std::vector<float> centroid_coords(this->members[0].n, 0);
     for (Point point: this->members) {

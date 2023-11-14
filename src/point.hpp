@@ -7,6 +7,8 @@
 #include <cmath>
 #include <vector>
 
+#define DEFAULT_EPS  2.220446049250313e-16
+
 typedef struct Label {
     std::string str = "";
     int num = -1;
@@ -22,6 +24,7 @@ public:
     float manhattan_distance(const Point point) const;
     float distance(const Point point, const std::string dist_metric) const;
     void assert_equal_n(const Point point) const;
+    bool same(const Point point, const float eps = DEFAULT_EPS) const;
     Point copy() const;
 } Point; 
 
@@ -30,6 +33,11 @@ std::vector<Point> vectors_to_points(const std::vector<std::vector<float>> vecto
 void assert_equal_n(const std::vector<Point> points);
 std::vector<Point> copy(const std::vector<Point> points);
 Point random_point(const size_t n);
+bool allclose(
+    const std::vector<Point> arr1, 
+    const std::vector<Point> arr2, 
+    const float eps = DEFAULT_EPS
+);
 
 void Point::print() const {
     std::cout << this->label.num << ": [";
@@ -70,6 +78,13 @@ float Point::distance(const Point point, const std::string dist_metric) const {
     return (dist_metric == "manhattan")? 
         this->manhattan_distance(point): 
         this->euclidean_distance(point); 
+}
+
+bool Point::same(const Point point, const float eps) const {
+    this->assert_equal_n(point);
+    for (size_t i = 0; i < this->n; ++i)
+        if (abs(this->coords[i] - point.coords[i]) > eps) return false;
+    return true;
 }
 
 Point Point::copy() const {
@@ -119,6 +134,21 @@ Point random_point(const size_t n) {
     std::vector<float> coords;
     for (size_t i = 0; i < n; ++i) coords.push_back(rand()%100);
     return (Point){.n = n, .coords = coords};
+}
+
+bool allclose(
+    const std::vector<Point> arr1, 
+    const std::vector<Point> arr2, 
+    const float eps
+) {
+    if (arr1.size() != arr2.size()) return false;
+    if (arr1.size() == 0) return true;
+    assert_equal_n(arr1);
+    assert_equal_n(arr2);
+    arr1[0].assert_equal_n(arr2[0]);
+    for (size_t i = 0; i < arr1.size(); ++i)
+        if (!arr1[i].same(arr2[i], eps)) return false;
+    return true;
 }
 
 #endif // CAMEL_POINT_HPP_

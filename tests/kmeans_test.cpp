@@ -1,18 +1,42 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../src/cluster.hpp"
+#include <iostream>
+#include "../src/unsupervised/kmeans.hpp"
 
 int main() {
-    Cluster c1 = {
-        .id = 0, 
-        .centroid = random_point(2),
-        .members = {
-            random_point(2),
-            random_point(2),
-        }
+    std::vector<std::vector<float>> vector_points = {
+        {2.65564218, 1.13781779, 2.},
+        {3.26703607, 0.45116584, 2.},
+        {3.2308542,  0.02495322, 2.},
+        {0.58933387, 0.21103187, 0.},
+        {1.36292299, 3.25242328, 1.},
+        {0.23334512, 0.79804703, 0.},
+        {4.26280164, 2.41056936, 3.},
+        {3.58650571, 0.92836418, 2.},
+        {1.56042522, 2.30161603, 1.},
+        {1.0651578,  1.36777427, 0.},
+        {3.68544639, 2.86744397, 3.},
+        {1.76788308, 3.29652383, 1.},
+        {1.19406845, 1.28510104, 0.},
+        {0.20820074, 1.16361149, 0.},
+        {2.13059544, 3.30791237, 3.},
+        {2.95923093, 2.6636872, 3.},
+        {2.7144565, 2.49166562, 3.},
+        {1.28480937, 1.09334075, 0.},
+        {3.61619512, 1.71713123, 2.},
+        {0.65144478, 3.47713109, 1.},
+        {3.07201845, 3.52020652, 3.},
+        {0.43963793, 3.09845707, 1.},
+        {0.9593578, 3.07223414, 1.},
+        {3.00656093, 1.89689878, 2.},
+        {34.00656093, 89.89689878, 10}
     };
-    c1.print(); std::cout << std::endl;
-    c1.recompute_centroid();
-    c1.print(); std::cout << std::endl;
+    std::vector<Point> points = vectors_to_points(vector_points);
+    Kmeans kmeans;
+    kmeans.compile(4, points);
+    for (Cluster cluster: kmeans.clusters) {
+        cluster.print();
+        std::cout << std::endl;
+    }
     return 0;
 }

@@ -29,6 +29,13 @@ void Knn::compile(
     const std::string dist_metric
 ) {
     assert_equal_n(points);
+    if (dist_metric != "euclidean" && dist_metric != "manhattan") {
+        std::cerr << "CAMEL ERROR: Invalid distance metric [";
+        std::cerr << dist_metric << "]" << std::endl;
+        exit(1);
+    }
+    this->dist_metric = dist_metric;
+    this->k = k;
     if (points.size() == 0) return;
     this->points = points;
     if (k > points.size()) {
@@ -36,13 +43,6 @@ void Knn::compile(
         std::cerr << k << " > " << points.size() << "]" << std::endl;
         exit(1);
     }
-    if (dist_metric != "euclidean" && dist_metric != "manhattan") {
-        std::cerr << "CAMEL ERROR: Invalid distance metric [";
-        std::cerr << dist_metric << "]" << std::endl;
-        exit(1);
-    } 
-    this->dist_metric = dist_metric;
-    this->k = k;
 }
 
 Label Knn::predict(const Point point) const {
